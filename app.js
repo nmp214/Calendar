@@ -44,6 +44,7 @@ class Month {
     }
 }
 
+
 //קריאה ל-5 האותיות שמכילות את השנה
 const year1 = document.getElementById('year1');
 const year2 = document.getElementById('year2');
@@ -51,6 +52,11 @@ const year3 = document.getElementById('year3');
 const year4 = document.getElementById('year4');
 const year5 = document.getElementById('year5');
 
+year1.value = 'ה';
+year2.value = 'ת';
+year3.value = 'ש';
+year4.value = 'פ';
+year5.value = 'ד';
 //משתנה שמכיל את השנה הנוכחית
 let year = 0;
 
@@ -81,9 +87,16 @@ const selectMonth = document.getElementById('months');
 const regularMonths = ["תשרי", "חשון", "כסליו", "טבת", "שבט", "אדר", "ניסן", "איר", "סיון", "תמוז", "אב", "אלול"];
 const meubarMonths = ["תשרי", "חשון", "כסליו", "טבת", "שבט", "אדר א'", "אדר ב'", "ניסן", "איר", "סיון", "תמוז", "אב", "אלול"];
 
+for (let index = 0; index < meubarMonths.length; index++) {
+    selectMonth[index] = new Option(meubarMonths[index])
+}
 
 const day = document.getElementById('day');
-const dates = [0, "א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט", "י", "יא", "יב", "יג", "יד", "טו", "טז", "יז", "יח", "יט", "כ", "כא", "כב", "כג", "כד", "כה", "כו", "כז", "כח", "כט", "ל"];
+const dates = ["א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט", "י", "יא", "יב", "יג", "יד", "טו", "טז", "יז", "יח", "יט", "כ", "כא", "כב", "כג", "כד", "כה", "כו", "כז", "כח", "כט", "ל"];
+
+for (let index = 0; index < dates.length; index++) {
+    day[index] = new Option(dates[index]);
+}
 
 //let firstOptions = new Option(regularMonths, undefined);
 //('תשרי', 'חשון', 'כסליו', 'טבת', 'שבט', 'אדר', 'ניסן', 'איר', 'סיון', 'תמוז', 'אב', 'אלול');
@@ -101,7 +114,7 @@ year4.onkeyup = () => { selectYear() }
 year5.onkeyup = () => { selectYear() }
 
 //הכנת מערך שיכיל את מערך החודשים בהתאם לשנה שנבחרה
-let selectedArr = [];
+// let selectedArr = [];
 
 function selectYear() {
     //השנה ו"האם מעוברת" מתאפסים
@@ -131,34 +144,51 @@ function selectYear() {
         flag = true;
     }
     //אם השנה מעוברת, נכנס למערך - מערך חודשי השנה המעוברת
-    if(flag){
+    if (flag) {
+        console.log(meubarMonths);
         for (let index = 0; index < meubarMonths.length; index++) {
-            selectedArr[index] = new Option(meubarMonths[index])
+            selectMonth[index] = new Option(meubarMonths[index])
         }
     }
     //אחרת- אם השנה רגילה, נכנס למערך - מערך חודשי השנה הרגילה
     else {
+        console.log(regularMonths);
         for (let index = 0; index < regularMonths.length; index++) {
-            selectedArr[index] = new Option(regularMonths[index])
+            selectMonth[index] = new Option(regularMonths[index])
         }
         //הוצאת האיבר האחרון מהאפשרויות, מכיוון שבשנה רגילה יש 12 חודשים ובמעוברת 13 חודשים, ואם כך חודש אלול נשאר כאן ואינו משתנה לחודש אחר ולכן צריך להוציאו
-        selectMonth.remove(selectMonth.options.length-1);
+        if (selectMonth.length === 13)
+            selectMonth.remove(selectMonth.options.length - 1);
     }
     //אם יש כבר חודשים באפשרויות וגם: יש חודש אדר א והשנה היא רגילה, או חודש אדר והשנה היא מעוברת, נמחקים כל החודשים מהאפשרויות
-    if((selectMonth.options.length != 0) && (selectMonth.options[5].value === "'אדר א" && flag === false || selectMonth.options[5].value === "אדר" && flag === true)) {
-        for(let i = 0; i < selectedArr.length; i++){
+    if ((selectMonth.options.length != 0) && (selectMonth.options[5].value === "'אדר א" && flag === false || selectMonth.options[5].value === "אדר" && flag === true)) {
+        for (let i = 0; i < selectMonth.length; i++) {
             selectMonth.remove(0);
         }
     }
     //אם אין שום חודשים באפשרויות, נכנס המערך שאליו הוכנסו לפני כן החודשים
-    if (selectMonth.options.length === 0){
-        for (let i = 0; i < selectedArr.length; i++) {
-            selectMonth.add(selectedArr[i]);
+    if (selectMonth.options.length === 0) {
+        for (let i = 0; i < selectMonth.length; i++) {
+            selectMonth.add(selectMonth[i]);
         }
     }
 
-    console.log(year + " year");
-    console.log(flag + " flag");
+    console.log('year: ', year);
+    console.log('flag: ', flag);
+    for (let index = 0; index < selectMonth.length; index++) {
+        console.log(selectMonth[index].value);
+    }
+}
+
+selectMonth.onchange = () => {
+    console.log('selectMonth changed');
+    for (let index = 0; index < dates.length; index++) {
+        day[index] = new Option(dates[index])
+    }
+    if (selectMonth.selectedIndex % 2 != 0) {
+        console.log('day selected: ', day.selectMonth);
+        day.remove(day.options.length - 1);
+    }
 }
 
 ok.onclick = () => {
@@ -228,6 +258,86 @@ ok.onclick = () => {
     dayInWeek += numDay - 1;
     dayInWeek = dayInWeek % 7;
     ans.innerHTML = days[dayInWeek];
-
 }
 
+
+
+console.log(calculateBirth(5739, 1));
+
+
+function calculateBirth(year, month) {
+    let days = 2, hours = 5, parts = 204;
+    let normals = 0, leaps = 0;
+    cyclesNumber = parseInt(year / 19);
+    let ans = calculation(cyclesNumber, 2, 16, 595);
+    days += ans.days;
+    hours += ans.hours;
+    parts += ans.parts;
+    console.log('after change year: days- ', days, ', hours- ', hours, ', parts- ', parts);
+    const leapsArr = [3, 6, 8, 11, 14, 17, 19];
+    if (year % 19 != 0) {
+        console.log('yes');
+        for (let i = 1; i < year % 19; i++) {
+            if (leapsArr.includes(i)) {
+                leaps++;
+            }
+            else {
+                normals++;
+            }
+        }
+        console.log('normals: ', normals, ' leaps: ', leaps);
+        ans = calculation(normals, 4, 8, 876);
+        days += ans.days;
+        hours += ans.hours;
+        parts += ans.parts;
+        console.log('after change normals: days- ', days, ', hours- ', hours, ', parts- ', parts);
+
+        ans = calculation(leaps, 5, 21, 589);
+        days += ans.days;
+        hours += ans.hours;
+        parts += ans.parts;
+
+        console.log('after change leap: days- ', days, ', hours- ', hours, ', parts- ', parts);
+    }
+
+    ans = calculation(month - 1, 1, 12, 793);
+    days += ans.days;
+    hours += ans.hours;
+    parts += ans.parts;
+    console.log('after change monthes: days- ', days, ', hours- ', hours, ', parts- ', parts);
+
+    ans = calculation(1, days, hours, parts);
+    days = ans.days;
+    hours = ans.hours;
+    parts = ans.parts;
+    if (days === 0)
+        days = 7;
+    console.log('after change all: days- ', days, ', hours- ', hours, ', parts- ', parts);
+
+    return { days: days, hours: hours, parts: parts };
+}
+
+function calculation(number, startingDays, startingHours, startingParts) {
+    let days = startingDays, hours = startingHours, parts = startingParts;
+    let partsRemainder, hoursRemainder;
+    days *= number;
+    hours *= number;
+    parts *= number;
+    console.log('days: ', days, '\nhours: ', hours, '\nparts: ', parts);
+    partsRemainder = parseInt(parts / 1080);
+    console.log('partsRemainder: ', partsRemainder);
+    parts = parts % 1080;
+    console.log('parts: ', parts);
+    hours += partsRemainder;
+    console.log('hours: ', hours);
+    hoursRemainder = parseInt(hours / 24);
+    console.log('hoursRemainder: ', hoursRemainder);
+    hours = hours % 24;
+    console.log('hours: ', hours);
+    days += hoursRemainder;
+    console.log('days: ', days);
+    days = days % 7;
+    console.log('days: ', days);
+    console.log('days: ', days, ' hours: ', hours, ' parts: ', parts);
+    return { days: days, hours: hours, parts: parts }
+}
