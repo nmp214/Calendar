@@ -262,9 +262,126 @@ ok.onclick = () => {
 
 
 
-console.log(calculateBirth(5739, 1));
+////////////////////////////////////////////////////////
 
 
+// console.log(calculateBirth(5784, 1));
+// const birth = calculateBirth(5783, 1);
+// console.log(birth);
+// console.log(dayOfBirth(birth, true));
+
+// const cuurentYear = 5772;
+// const birth = calculateBirth(cuurentYear, 1);
+// const dayOfRoshHashana = dayOfBirth(birth, false);
+// console.log(calculateDayOfFirstDate(cuurentYear, dayOfRoshHashana, 12));
+
+//check old birth!!!!!!
+
+console.log(isLeapYear(5756));
+console.log(caalculateDayOfDate(5756, 7, 15));
+
+//פונקציה המוצאת יום של תאריך שנשלח
+function caalculateDayOfDate(year, month, day) {
+    const birth = calculateBirth(year, 1);
+    const dayOfRoshHashana = dayOfBirth(year, birth, true);
+    const dayOfThisMonth = calculateDayOfFirstDate(year, dayOfRoshHashana, month);
+    console.log('birth: ', birth, ', dayOfRoshHashana: ', dayOfRoshHashana, ', dayOfThisMonth: ', dayOfThisMonth);
+    if ((dayOfThisMonth + day - 1) % 7 === 0)
+        return 7;
+    return (dayOfThisMonth + day - 1) % 7;
+}
+
+//פונקציה שמחשבת את היום של ראש חודש מסוים לפי ראש השנה באותה שנה
+function calculateDayOfFirstDate(year, RoshHashana, month) {
+    let addDays = Math.ceil((month - 1) / 2) * 2 + Math.floor((month - 1) / 2);
+    console.log('addDays: ', addDays);
+    if (month === 7 && isLeapYear(year)) {
+        console.log('if');
+        addDays += 1;
+    }
+    if (isFullMonth(year, 2)) {
+        console.log('2 full month');
+        addDays += 1;
+    }
+    if (!isFullMonth(year, 3)) {
+        console.log('3 not full month');
+        addDays -= 1;
+    }
+    console.log('addDays: ', addDays);
+    let day = (RoshHashana + addDays) % 7;
+    if (day === 0)
+        day = 7;
+    return day;
+}
+
+//פונקציה שבודקת אם החודש מלא או חסר (משמש לבדיקת חודשים חשוון וכסליו)
+function isFullMonth(year, month) {
+    const first = calculateBirth(year, 1);
+    const second = calculateBirth(year + 1, 1);
+    console.log('first: ', first, '\nsecond: ', second);
+    const firstRoshHashana = dayOfBirth(year, first, true);
+    const secondRoshHashana = dayOfBirth(year, second, true);
+    console.log('firstRoshHashana: ', firstRoshHashana, '\nsecondRoshHashana: ', secondRoshHashana);
+    const isLeap = isLeapYear(year);
+    //fix the remainder
+    // const remainder = Math.abs(secondRoshHashana - firstRoshHashana) - 1;
+    const remainder = (Math.abs(secondRoshHashana + 7 - firstRoshHashana) - 1) % 7;
+    console.log('remainder: ', remainder);
+    if (!isLeap) {
+        if (remainder === 2)
+            return false;
+        if (remainder === 4)
+            return true;
+        if (remainder === 3) {
+            if (month === 2)
+                return false;
+            return true;
+        }
+    }
+    else {
+        if (remainder === 4)
+            return false;
+        if (remainder === 6)
+            return true;
+        if (remainder === 5) {
+            if (month === 2)
+                return true;
+            return false;
+        }
+    }
+}
+
+//פונקציה הבודקת אם השנה שנשלחה מעוברת או לא
+function isLeapYear(year) {
+    const remainder = year % 19;
+    if (remainder === 0 || remainder === 3 || remainder === 6 || remainder === 8
+        || remainder === 11 || remainder === 14 || remainder === 17)
+        return true;
+    return false;
+}
+
+//פונקציה שמקבלת מולד ומחזירה את היום של ראש החודש
+function dayOfBirth(year, birth, isFirst) {
+    let day = birth.days;
+    if (isFirst) {
+        if (birth.days === 1 || birth.days === 4 || birth.days === 6)
+            return birth.days + 1;
+        if (birth.hours > 18
+            || (isLeapYear(year) && (birth.days === 3 && (birth.hours === 9 && birth.parts >= 204) || birth.hours > 9))
+            || (isLeapYear(year - 1) && (birth.days === 2 && (birth.hours === 15 && birth.parts >= 589) || birth.hours > 15))) {
+            console.log('more than 18', birth.hours);
+            day = birth.days + 1;
+        }
+        if (day === 1 || day === 4 || day === 6)
+            day += 1;
+    }
+    else
+        if (birth.hours > 18)
+            return birth.days + 1;
+    return day;
+}
+
+//פונקציה המוצאת את המולד של החודש הנשלח
 function calculateBirth(year, month) {
     let days = 2, hours = 5, parts = 204;
     let normals = 0, leaps = 0;
@@ -273,10 +390,10 @@ function calculateBirth(year, month) {
     days += ans.days;
     hours += ans.hours;
     parts += ans.parts;
-    console.log('after change year: days- ', days, ', hours- ', hours, ', parts- ', parts);
+    // console.log('after change year: days- ', days, ', hours- ', hours, ', parts- ', parts);
     const leapsArr = [3, 6, 8, 11, 14, 17, 19];
     if (year % 19 != 0) {
-        console.log('yes');
+        // console.log('yes');
         for (let i = 1; i < year % 19; i++) {
             if (leapsArr.includes(i)) {
                 leaps++;
@@ -285,26 +402,26 @@ function calculateBirth(year, month) {
                 normals++;
             }
         }
-        console.log('normals: ', normals, ' leaps: ', leaps);
+        // console.log('normals: ', normals, ' leaps: ', leaps);
         ans = calculation(normals, 4, 8, 876);
         days += ans.days;
         hours += ans.hours;
         parts += ans.parts;
-        console.log('after change normals: days- ', days, ', hours- ', hours, ', parts- ', parts);
+        // console.log('after change normals: days- ', days, ', hours- ', hours, ', parts- ', parts);
 
         ans = calculation(leaps, 5, 21, 589);
         days += ans.days;
         hours += ans.hours;
         parts += ans.parts;
 
-        console.log('after change leap: days- ', days, ', hours- ', hours, ', parts- ', parts);
+        // console.log('after change leap: days- ', days, ', hours- ', hours, ', parts- ', parts);
     }
 
     ans = calculation(month - 1, 1, 12, 793);
     days += ans.days;
     hours += ans.hours;
     parts += ans.parts;
-    console.log('after change monthes: days- ', days, ', hours- ', hours, ', parts- ', parts);
+    // console.log('after change monthes: days- ', days, ', hours- ', hours, ', parts- ', parts);
 
     ans = calculation(1, days, hours, parts);
     days = ans.days;
@@ -312,7 +429,7 @@ function calculateBirth(year, month) {
     parts = ans.parts;
     if (days === 0)
         days = 7;
-    console.log('after change all: days- ', days, ', hours- ', hours, ', parts- ', parts);
+    // console.log('after change all: days- ', days, ', hours- ', hours, ', parts- ', parts);
 
     return { days: days, hours: hours, parts: parts };
 }
@@ -323,21 +440,22 @@ function calculation(number, startingDays, startingHours, startingParts) {
     days *= number;
     hours *= number;
     parts *= number;
-    console.log('days: ', days, '\nhours: ', hours, '\nparts: ', parts);
+    // console.log('days: ', days, '\nhours: ', hours, '\nparts: ', parts);
     partsRemainder = parseInt(parts / 1080);
-    console.log('partsRemainder: ', partsRemainder);
+    // console.log('partsRemainder: ', partsRemainder);
     parts = parts % 1080;
-    console.log('parts: ', parts);
+    // console.log('parts: ', parts);
     hours += partsRemainder;
-    console.log('hours: ', hours);
+    // console.log('hours: ', hours);
     hoursRemainder = parseInt(hours / 24);
-    console.log('hoursRemainder: ', hoursRemainder);
+    // console.log('hoursRemainder: ', hoursRemainder);
     hours = hours % 24;
-    console.log('hours: ', hours);
+    // console.log('hours: ', hours);
     days += hoursRemainder;
-    console.log('days: ', days);
+    // console.log('days: ', days);
     days = days % 7;
-    console.log('days: ', days);
-    console.log('days: ', days, ' hours: ', hours, ' parts: ', parts);
+    // console.log('days: ', days);
+    // console.log('days: ', days, ' hours: ', hours, ' parts: ', parts);
     return { days: days, hours: hours, parts: parts }
 }
+
